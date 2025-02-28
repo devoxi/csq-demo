@@ -211,7 +211,7 @@
             cartItems.forEach(item => {
                 const li = document.createElement('li');
                 li.innerHTML = `
-                    ${item.name} - $${item.price}
+                    ${item.name} (x${item.quantity || 1}) - $${item.price}
                     <button class="remove-from-cart" data-id="${item.id}">Remove</button>
                 `;
                 cartItemsElement.appendChild(li);
