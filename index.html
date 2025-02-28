@@ -121,6 +121,7 @@
                 <li><a href="#services">Services</a></li>
                 <li><a href="#contact">Contact</a></li>
                 <li><a href="#products">Products</a></li>
+                <li><a href="cart.html">Cart</a></li>
             </ul>
         </nav>
         <main>
@@ -190,9 +191,18 @@
     </div>
 
     <script>
-        const cartItems = [];
+        let cartItems = [];
         const cartItemsElement = document.getElementById('cart-items');
         const cartTotalElement = document.getElementById('cart-total');
+
+        // Load cart items from localStorage
+        function loadCart() {
+            const savedCart = localStorage.getItem('cart');
+            if (savedCart) {
+                cartItems = JSON.parse(savedCart);
+                updateCart();
+            }
+        }
 
         function updateCart() {
             cartItemsElement.innerHTML = '';
@@ -205,20 +215,30 @@
                     <button class="remove-from-cart" data-id="${item.id}">Remove</button>
                 `;
                 cartItemsElement.appendChild(li);
-                total += parseFloat(item.price);
+                total += parseFloat(item.price) * (item.quantity || 1);
             });
 
             cartTotalElement.textContent = total.toFixed(2);
+            // Save cart to localStorage
+            localStorage.setItem('cart', JSON.stringify(cartItems));
         }
 
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('add-to-cart')) {
-                const product = {
-                    id: e.target.getAttribute('data-id'),
-                    name: e.target.getAttribute('data-name'),
-                    price: e.target.getAttribute('data-price')
-                };
-                cartItems.push(product);
+                const productId = e.target.getAttribute('data-id');
+                const existingItem = cartItems.find(item => item.id === productId);
+                
+                if (existingItem) {
+                    existingItem.quantity = (existingItem.quantity || 1) + 1;
+                } else {
+                    const product = {
+                        id: productId,
+                        name: e.target.getAttribute('data-name'),
+                        price: e.target.getAttribute('data-price'),
+                        quantity: 1
+                    };
+                    cartItems.push(product);
+                }
                 updateCart();
             }
 
@@ -231,6 +251,9 @@
                 }
             }
         });
+
+        // Load cart when page loads
+        loadCart();
     </script>
 </body>
 </html>
