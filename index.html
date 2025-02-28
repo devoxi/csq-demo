@@ -107,6 +107,33 @@
             border-bottom: 1px solid #ddd;
             padding-bottom: 10px;
         }
+        .pagination {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .pagination button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .pagination button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .products-section {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        #page-info {
+            margin: 0 15px;
+        }
     </style>
 </head>
 <body>
@@ -126,60 +153,13 @@
         </nav>
         <main>
             <div class="grid-container">
-                <div class="grid-item">
-                    <h2>About Us</h2>
-                    <p>This is a simple example website with a header, navigation bar, and grid-based content layout.</p>
+                <div id="products-container" class="products-section">
+                    <!-- Products will be inserted here -->
                 </div>
-                <div class="grid-item">
-                    <h2>Our Services</h2>
-                    <ul>
-                        <li>Web Design</li>
-                        <li>Graphic Design</li>
-                        <li>Content Creation</li>
-                        <li>SEO Optimization</li>
-                    </ul>
-                </div>
-                <div class="grid-item">
-                    <h2>Contact Information</h2>
-                    <p>Email: info@example.com</p>
-                    <p>Phone: (123) 456-7890</p>
-                </div>
-                <div class="grid-item">
-                    <h2>Our Mission</h2>
-                    <p>To provide high-quality digital solutions that help businesses thrive in the online world.</p>
-                </div>
-                <div class="grid-item product">
-                    <h2>Product 1</h2>
-                    <img src="https://via.placeholder.com/150" alt="Product 1">
-                    <p>Description of Product 1</p>
-                    <p>Price: $19.99</p>
-                    <button class="add-to-cart" data-id="1" data-name="Product 1" data-price="19.99">Add to Cart</button>
-                </div>
-                <div class="grid-item product">
-                    <h2>Product 2</h2>
-                    <img src="https://via.placeholder.com/150" alt="Product 2">
-                    <p>Description of Product 2</p>
-                    <p>Price: $24.99</p>
-                    <button class="add-to-cart" data-id="2" data-name="Product 2" data-price="24.99">Add to Cart</button>
-                </div>
-                <div class="grid-item product">
-                    <h2>Product 3</h2>
-                    <img src="https://via.placeholder.com/150" alt="Product 3">
-                    <p>Description of Product 3</p>
-                    <p>Price: $29.99</p>
-                    <button class="add-to-cart" data-id="3" data-name="Product 3" data-price="29.99">Add to Cart</button>
-                </div>
-                <div class="grid-item long-form-content">
-                    <h2>Lorem Ipsum</h2>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc id aliquam tincidunt, nisi nunc tincidunt nunc, nec tincidunt nunc nunc id nunc. Sed euismod, nunc id aliquam tincidunt, nisi nunc tincidunt nunc, nec tincidunt nunc nunc id nunc. Sed euismod, nunc id aliquam tincidunt, nisi nunc tincidunt nunc, nec tincidunt nunc nunc id nunc.
-                    </p>
-                    <p>
-                        Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Proin eget tortor risus. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Curabitur aliquet quam in dui posuere blandit. Vivamus suscipit tortor eget felis porttitor volutpat. Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem.
-                    </p>
-                    <p>
-                        Nulla porttitor accumsan tincidunt. Curabitur aliquet quam id dui posuere blandit. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Cras ultricies ligula sed magna dictum porta. Pellentesque in ipsum id orci porta dapibus.
-                    </p>
+                <div class="pagination">
+                    <button id="prev-page">Previous</button>
+                    <span id="page-info">Page 1 of 1</span>
+                    <button id="next-page">Next</button>
                 </div>
             </div>
         </main>
@@ -194,8 +174,89 @@
         let cartItems = [];
         const cartItemsElement = document.getElementById('cart-items');
         const cartTotalElement = document.getElementById('cart-total');
+        const PRODUCTS_PER_PAGE = 6;
+        let currentPage = 1;
 
-        // Load cart items from localStorage
+        // Product generation and management
+        function generateRandomProducts() {
+            const categories = ['Electronics', 'Books', 'Clothing', 'Home & Garden', 'Toys'];
+            const adjectives = ['Premium', 'Deluxe', 'Essential', 'Classic', 'Modern'];
+            const products = [];
+
+            for (let i = 1; i <= 24; i++) {
+                const category = categories[Math.floor(Math.random() * categories.length)];
+                const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+                const basePrice = Math.floor(Math.random() * 190) + 10; // Random price between 10 and 200
+                
+                products.push({
+                    id: i.toString(),
+                    name: `${adjective} ${category} Item`,
+                    price: basePrice.toFixed(2),
+                    description: `High-quality ${category.toLowerCase()} product for your needs`,
+                    image: `https://via.placeholder.com/150?text=${category}`
+                });
+            }
+            return products;
+        }
+
+        function loadOrGenerateProducts() {
+            let products = JSON.parse(localStorage.getItem('products'));
+            if (!products) {
+                products = generateRandomProducts();
+                localStorage.setItem('products', JSON.stringify(products));
+            }
+            return products;
+        }
+
+        function displayProducts(products, page) {
+            const productsContainer = document.getElementById('products-container');
+            productsContainer.innerHTML = '';
+
+            const start = (page - 1) * PRODUCTS_PER_PAGE;
+            const end = start + PRODUCTS_PER_PAGE;
+            const paginatedProducts = products.slice(start, end);
+
+            paginatedProducts.forEach(product => {
+                const productElement = document.createElement('div');
+                productElement.className = 'grid-item product';
+                productElement.innerHTML = `
+                    <h2>${product.name}</h2>
+                    <img src="${product.image}" alt="${product.name}">
+                    <p>${product.description}</p>
+                    <p>Price: $${product.price}</p>
+                    <button class="add-to-cart" 
+                        data-id="${product.id}" 
+                        data-name="${product.name}" 
+                        data-price="${product.price}">Add to Cart</button>
+                `;
+                productsContainer.appendChild(productElement);
+            });
+
+            // Update pagination controls
+            const totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE);
+            document.getElementById('page-info').textContent = `Page ${page} of ${totalPages}`;
+            document.getElementById('prev-page').disabled = page === 1;
+            document.getElementById('next-page').disabled = page === totalPages;
+        }
+
+        // Pagination event listeners
+        document.getElementById('prev-page').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                displayProducts(loadOrGenerateProducts(), currentPage);
+            }
+        });
+
+        document.getElementById('next-page').addEventListener('click', () => {
+            const products = loadOrGenerateProducts();
+            const totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayProducts(products, currentPage);
+            }
+        });
+
+        // Cart functionality
         function loadCart() {
             const savedCart = localStorage.getItem('cart');
             if (savedCart) {
@@ -252,8 +313,12 @@
             }
         });
 
-        // Load cart when page loads
-        loadCart();
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            const products = loadOrGenerateProducts();
+            displayProducts(products, currentPage);
+            loadCart();
+        });
     </script>
 </body>
 </html>
