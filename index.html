@@ -130,6 +130,29 @@
         .remove-from-cart:hover {
             background-color: #c0392b;
         }
+        .go-to-cart {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            font-size: 1rem;
+            margin: 1rem auto;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            width: 200px;
+            max-width: 90%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .go-to-cart:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
         #cart-panel {
             width: 350px;
             background-color: white;
@@ -226,6 +249,7 @@
         <h2>Your Cart</h2>
         <ul id="cart-items"></ul>
         <p>Total: $<span id="cart-total">0.00</span></p>
+        <a href="cart.html" class="go-to-cart">Go to Cart</a>
     </div>
 
     <script>
@@ -245,7 +269,7 @@
                 const category = categories[Math.floor(Math.random() * categories.length)];
                 const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
                 const basePrice = Math.floor(Math.random() * 190) + 10; // Random price between 10 and 200
-                
+
                 products.push({
                     id: i.toString(),
                     name: `${adjective} ${category} Item`,
@@ -346,7 +370,7 @@
             if (e.target.classList.contains('add-to-cart')) {
                 const productId = e.target.getAttribute('data-id');
                 const existingItem = cartItems.find(item => item.id === productId);
-                
+
                 if (existingItem) {
                     existingItem.quantity = (existingItem.quantity || 1) + 1;
                 } else {

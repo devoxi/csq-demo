@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
+    <script type="text/javascript">
+        window.heapReadyCb=window.heapReadyCb||[],window.heap=window.heap||[],heap.load=function(e,t){window.heap.envId=e,window.heap.clientConfig=t=t||{},window.heap.clientConfig.shouldFetchServerConfig=!1;var a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src="https://cdn.us.heap-api.com/config/"+e+"/heap_config.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(a,r);var n=["init","startTracking","stopTracking","track","resetIdentity","identify","getSessionId","getUserId","getIdentity","addUserProperties","addEventProperties","removeEventProperty","clearEventProperties","addAccountProperties","addAdapter","addTransformer","addTransformerFn","onReady","addPageviewProperties","removePageviewProperty","clearPageviewProperties","trackPageview"],i=function(e){return function(){var t=Array.prototype.slice.call(arguments,0);window.heapReadyCb.push({name:e,fn:function(){heap[e]&&heap[e].apply(heap,t)}})}};for(var p=0;p<n.length;p++)heap[n[p]]=i(n[p])};
+        heap.load("1212277199");
+    </script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -146,6 +150,28 @@
             background-color: #2980b9;
             transform: translateY(-2px);
         }
+        .cart-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .buy-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: #27ae60;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .buy-button:hover {
+            background-color: #219653;
+            transform: translateY(-2px);
+        }
         .empty-cart {
             text-align: center;
             padding: 3rem;
@@ -187,7 +213,10 @@
                     <div class="cart-total">
                         Total: $<span id="cart-total">0.00</span>
                     </div>
-                    <a href="index.html" class="back-to-shop">Continue Shopping</a>
+                    <div class="cart-actions">
+                        <a href="index.html" class="back-to-shop">Continue Shopping</a>
+                        <button id="buy-button" class="buy-button">Buy Now</button>
+                    </div>
                 </div>
             </div>
         </main>
@@ -247,7 +276,7 @@
                 const id = e.target.getAttribute('data-id');
                 const quantityInput = document.querySelector(`.quantity-input[data-id="${id}"]`);
                 const newQuantity = parseInt(quantityInput.value);
-                
+
                 if (newQuantity > 0) {
                     const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
                     const updatedCart = cartItems.map(item => {
@@ -263,7 +292,69 @@
         });
 
         // Load cart when page loads
-        document.addEventListener('DOMContentLoaded', loadCart);
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCart();
+
+            // Add event listener for the buy button
+            const buyButton = document.getElementById('buy-button');
+            if (buyButton) {
+                buyButton.addEventListener('click', function() {
+                    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+                    if (cartItems.length === 0) {
+                        alert('Your cart is empty. Please add items before proceeding to checkout.');
+                        return;
+                    }
+
+                    // Create and show the confirmation page
+                    showConfirmationPage();
+                });
+            }
+        });
+
+        // Function to show the confirmation page
+        function showConfirmationPage() {
+            // Get the main content element
+            const mainContent = document.getElementById('main-content');
+
+            // Empty the cart after purchase
+            localStorage.removeItem('cart');
+
+            // Get cart total
+            const cartTotal = document.getElementById('cart-total').textContent;
+
+            // Create confirmation page content
+            const confirmationContent = `
+                <header>
+                    <h1>Order Confirmation</h1>
+                </header>
+                <nav>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#products">Products</a></li>
+                        <li><a href="cart.html">Cart</a></li>
+                    </ul>
+                </nav>
+                <main>
+                    <div class="cart-container">
+                        <div class="cart-summary" style="text-align: center;">
+                            <h2>Thank you for your purchase!</h2>
+                            <p>Your order has been confirmed.</p>
+                            <p>Total amount: $${cartTotal}</p>
+                            <p>A confirmation email has been sent to your registered email address.</p>
+                            <div class="cart-actions" style="justify-content: center; margin-top: 2rem;">
+                                <a href="index.html" class="back-to-shop">Return to Shop</a>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            `;
+
+            // Replace the content with confirmation page
+            mainContent.innerHTML = confirmationContent;
+        }
     </script>
 </body>
 </html> 
