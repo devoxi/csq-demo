@@ -316,11 +316,18 @@
             // Get the main content element
             const mainContent = document.getElementById('main-content');
 
+            // Get cart total before emptying the cart
+            const cartTotal = document.getElementById('cart-total').textContent;
+
+            // Track purchase event with Heap Analytics
+            heap.track('Purchase Completed', {
+                totalAmount: parseFloat(cartTotal),
+                currency: 'USD',
+                purchaseDate: new Date().toISOString()
+            });
+
             // Empty the cart after purchase
             localStorage.removeItem('cart');
-
-            // Get cart total
-            const cartTotal = document.getElementById('cart-total').textContent;
 
             // Create confirmation page content
             const confirmationContent = `

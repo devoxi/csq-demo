@@ -382,6 +382,15 @@
                     };
                     cartItems.push(product);
                 }
+
+                // Track "add to cart" event in Heap
+                heap.track('Add to Cart', {
+                    productId: productId,
+                    productName: e.target.getAttribute('data-name'),
+                    productPrice: e.target.getAttribute('data-price'),
+                    quantity: existingItem ? existingItem.quantity : 1
+                });
+
                 updateCart();
             }
 
