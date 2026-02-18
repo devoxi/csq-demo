@@ -2,6 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛒</text></svg>">
     <script async src="https://t-staging.contentsquare.net/uxa/981910b46212d.js"></script>
     <title>Simple Example Website</title>
     <style>
@@ -272,7 +273,7 @@
                     name: `${adjective} ${category} Item`,
                     price: basePrice.toFixed(2),
                     description: `High-quality ${category.toLowerCase()} product for your needs`,
-                    image: `https://via.placeholder.com/150?text=${category}`
+                    image: `https://placehold.co/150x150/3498db/white?text=${encodeURIComponent(category)}`
                 });
             }
             return products;
